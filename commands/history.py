@@ -3,6 +3,7 @@ import datetime
 from jinja2 import Template
 
 import bot_logger
+import config
 import lang
 import models
 
@@ -29,11 +30,16 @@ def build_message(data):
     for tip in data[::-1]:
         str_finish = "Pending"
 
+        # custom status
         if 'status' in tip.keys() and tip['status'] is not None and tip['status'] != "":
             str_finish = str_finish + ' - ' + tip['status']
 
+        # finish and have link to tx
         if tip['finish']:
-            str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
+            if tip['tx_id'] and len(tip['tx_id']) >= 64:
+                str_finish = "[Successful](" + config.block_explorer + tip['tx_id'] + ")"
+        else:
+            str_finish = ""
 
         str_amount = ""
         if tip['amount'] != "":
