@@ -11,23 +11,23 @@ from tests.MockRpc import MockRpc
 class TestTip(unittest.TestCase):
     def test_tip_simple(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " 100 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " 100 " + config.coin_name, None)
         self.assertEqual(100, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(False, tip.verify)
 
     def test_tip_simpl_float_comma(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " 10,8 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " 10,8 " + config.coin_name, None)
         self.assertEqual(10, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(False, tip.verify)
 
     def test_tip_simple_float_dot(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " 10.8 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " 10.8 " + config.coin_name, None)
         self.assertEqual(10, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(False, tip.verify)
 
     def test_tip_simple_float_dot_long(self):
@@ -39,14 +39,14 @@ class TestTip(unittest.TestCase):
 
     def test_tip_simple_verify(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " 100 doge verify", None)
+        tip.parse_message("+/u/" + config.bot_name + " 100 " + config.coin_name + " verify", None)
         self.assertEqual(100, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(True, tip.verify)
 
     def test_tip_random(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " random100 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " random100 " + config.coin_name + "", None)
         self.assertLess(tip.amount, 100)
         self.assertGreater(tip.amount, 1)
         self.assertEqual("doge", tip.currency)
@@ -54,68 +54,70 @@ class TestTip(unittest.TestCase):
 
     def test_tip_roll(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " roll doge verify", None)
+        tip.parse_message("+/u/" + config.bot_name + " roll " + config.coin_name + " verify", None)
         self.assertLessEqual(tip.amount, 6)
         self.assertGreaterEqual(tip.amount, 1)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(True, tip.verify)
 
     def test_tip_flip(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " flip doge verify", None)
+        tip.parse_message("+/u/" + config.bot_name + " flip " + config.coin_name + " verify", None)
         self.assertLessEqual(tip.amount, 2)
         self.assertGreaterEqual(tip.amount, 1)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(True, tip.verify)
 
     def test_tip_dogecar(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " dogecar doge verify", None)
+        tip.parse_message("+/u/" + config.bot_name + " dogecar " + config.coin_name + " verify", None)
         self.assertEqual(tip.amount, config.tip_keyword['dogecar'])
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual(True, tip.verify)
 
     def test_tip_random_verify(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " random10000 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " random10000 " + config.coin_name, None)
         self.assertLess(tip.amount, 10000)
         self.assertGreater(tip.amount, 1)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         if tip.amount >= 1000:
             self.assertEqual(True, tip.verify)
 
     def test_tip_user_mention(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " /u/just-an-dev 1000 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " /u/just-an-dev 1000 " + config.coin_name, None)
         self.assertEqual(1000, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual("just-an-dev", tip.receiver.username)
 
     def test_tip_user_mention_add(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " +/u/just-an-dev 1000 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " +/u/just-an-dev 1000 " + config.coin_name, None)
         self.assertEqual(1000, tip.amount)
         self.assertEqual("doge", tip.currency)
         self.assertEqual("just-an-dev", tip.receiver.username)
 
     def test_tip_user_mention_at(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " @just-an-dev 1000 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " @just-an-dev 1000 " + config.coin_name, None)
         self.assertEqual(1000, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual("just-an-dev", tip.receiver.username)
 
     def test_tip_negative(self):
         tip = models.Tip()
-        self.assertRaises(AttributeError, tip.parse_message, "+/u/" + config.bot_name + " -99999999 doge verify", None)
+        self.assertRaises(AttributeError, tip.parse_message,
+                          "+/u/" + config.bot_name + " -99999999 " + config.coin_name + " verify", None)
 
     def test_tip_address(self):
         mock_rpc = MockRpc()
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR 1000 doge", mock_rpc)
+        tip.parse_message("+/u/" + config.bot_name + " nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR 1000 " + config.coin_name,
+                          mock_rpc)
         tip.set_sender('just-an-dev')
         self.assertEqual(1000, tip.amount)
-        self.assertEqual("doge", tip.currency)
+        self.assertEqual(config.coin_name, tip.currency)
         self.assertEqual("nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", tip.receiver.address)
         self.assertEqual("address-nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", tip.receiver.username)
 

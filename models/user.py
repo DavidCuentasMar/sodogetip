@@ -100,7 +100,7 @@ class UserStorage:
         data = table.count(user_db.address == address)
 
         if data == 0:
-            table.insert({"type": "simple", "address": address, "coin": "doge", "enable": False})
+            table.insert({"type": "simple", "address": address, "coin": config.coin_name, "enable": False})
 
             if active is True:
                 UserStorage.active_user_address(username, address)

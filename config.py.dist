@@ -22,8 +22,10 @@ unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json'
 logs_path = DATA_PATH + 'logs/'
 history_path = DATA_PATH + 'history/'
 
-
-spam_limit = 1000
+float_precision = 0
+spam_limit = 500
+coin_name = 'doge'
+block_explorer = "https://chain.so/tx/DOGE/"
 rate_fee = 1
 minial_fee = 1
 
@@ -52,5 +54,3 @@ vanitygen_price = {
 shop_enabled = False
 shop_fee = float(1/100)
 shop_offer = DATA_PATH + 'offer.json'
-
-block_explorer = "https://chain.so/tx/DOGE/"

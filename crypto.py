@@ -299,7 +299,7 @@ def calculate_fee(nb_input, nb_out):
     # bot_logger.logger.debug("size of tx : %s" % size)
 
     fee_rate = float(config.rate_fee)
-    fee = 1
+    fee = config.minial_fee
     if size > 1000:
         fee = (size / 1000) * fee_rate
 
