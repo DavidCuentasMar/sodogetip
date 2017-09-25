@@ -45,7 +45,7 @@ def build_message(data):
         if tip['amount'] != "":
             str_amount = str(float(tip['amount']))
             if float(tip['amount']).is_integer():
-                str_amount = str(int(tip['amount']))
+                str_amount = str(float(tip['amount']))
 
         history_table += "%s|%s|%s|%s|%s|%s|\n" % (
             datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),

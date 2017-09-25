@@ -163,20 +163,21 @@ def send_to_failover(rpc, sender_address, receiver_address, amount, take_fee_on_
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
     if take_fee_on_amount:
-        return_amount = int(sum(unspent_amounts)) - int(int(amount) - int(fee))
+        return_amount = float(sum(unspent_amounts)) - float(float(amount) - float(fee))
     else:
-        return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
+        return_amount = float(sum(unspent_amounts)) - float(amount) - float(fee)
 
     bot_logger.logger.debug("return amount : %s" % str(return_amount))
 
     if int(return_amount) < 1:
-        raw_addresses = {receiver_address: int(amount)}
+        raw_addresses = {receiver_address: round(float(amount), config.float_precision)}
     else:
         # when consolidate tx
         if receiver_address == sender_address:
-            raw_addresses = {receiver_address: int(int(amount) - int(fee))}
+            raw_addresses = {receiver_address: round(float(float(amount) - float(fee)), config.float_precision)}
         else:
-            raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
+            raw_addresses = {receiver_address: round(float(amount), config.float_precision),
+                             sender_address: round(float(return_amount), config.float_precision)}
 
     bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 

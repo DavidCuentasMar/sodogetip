@@ -52,26 +52,27 @@ def tip_user(msg):
         return False
 
     # check sender have enough
-    user_spendable_balance = tip.sender.get_balance()
-    bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
+    user_balance = tip.sender.get_balance()
+    bot_logger.logger.debug('user_balance = %s' % user_balance)
 
     # check user not send more they have
-    if tip.amount > float(user_spendable_balance):
+    if tip.amount > float(user_balance):
         user_pending_balance = tip.sender.get_balance_unconfirmed()
         # not enough for tip
-        if tip.amount < float(user_pending_balance):
-            # todo : add this to pendding tips
-            tip.sender.send_private_message('pending tip',
-                                            Template(lang.message_balance_pending_tip).render(
-                                                username=tip.sender.username))
-        else:
+        if tip.amount > float(user_pending_balance):
             bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
-                tip.sender.username, str(tip.amount), str(user_spendable_balance)))
+                tip.sender.username, str(tip.amount), str(user_balance)))
             tip.sender.send_private_message('low balance',
                                             Template(lang.message_balance_low_tip).render(
                                                 username=tip.sender.username))
-
+        else:
+            # todo : add this to pendding tips
+            # todo : remove this PM
+            tip.sender.send_private_message('pending tip',
+                                            Template(lang.message_balance_pending_tip).render(
+                                                username=tip.sender.username))
     else:
+
         # add tip to history of sender & receiver
         models.HistoryStorage.add_to_history_tip(tip.sender.username, "tip send", tip)
         models.HistoryStorage.add_to_history_tip(tip.receiver.username, "tip receive", tip)
@@ -90,7 +91,7 @@ def tip_user(msg):
                 if tip.verify:
                     msg.reply(Template(lang.message_tip).render(
                         sender=tip.sender.username, receiver=tip.receiver.username,
-                        amount=str(int(tip.amount)),
+                        amount=str(float(tip.amount)),
                         value_usd=str(tip.get_value_usd()), txid=tip.tx_id
                     ))
         else:
