@@ -1,21 +1,7 @@
-import json
-
 from tinydb import TinyDB, Query
 
 import bot_logger
 import config
-
-
-# read file
-# Todo : to remove after migration of user base
-def get_users_old():
-    with open(config.DATA_PATH + 'user_files.json', 'r') as f:
-        try:
-            data = json.load(f)
-        except ValueError:
-            bot_logger.logger.warning("Error on read user file")
-            data = {}
-        return data
 
 
 def get_unregistered_tip():
