@@ -55,22 +55,24 @@ def tip_user(msg):
     user_balance = tip.sender.get_balance()
     bot_logger.logger.debug('user_balance = %s' % user_balance)
 
-    # check user not send more they have
+    # check user not send more they have (confirmed balance)
     if tip.amount > float(user_balance):
-        user_pending_balance = tip.sender.get_balance_unconfirmed()
-        # not enough for tip
+
+        user_pending_balance = user_balance + tip.sender.get_balance_unconfirmed()
+
+        # not enough for tip (with unconfirmed balance)
         if tip.amount > float(user_pending_balance):
             bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                 tip.sender.username, str(tip.amount), str(user_balance)))
             tip.sender.send_private_message('low balance',
                                             Template(lang.message_balance_low_tip).render(
                                                 username=tip.sender.username))
+            return False
+
         else:
+            # we have to wait unconfirmed balance before process tip, add to queue
+            pass
             # todo : add this to pendding tips
-            # todo : remove this PM
-            tip.sender.send_private_message('pending tip',
-                                            Template(lang.message_balance_pending_tip).render(
-                                                username=tip.sender.username))
     else:
 
         # add tip to history of sender & receiver
