@@ -116,8 +116,7 @@ def process_pending_tip():
                             "replay tipping %s - %s send %s to %s  " % (
                                 str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                        tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address,
-                                                            tip.amount)
+                        tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
                         if tip.tx_id:
                             tip.finish = True
 
@@ -184,8 +183,8 @@ def anti_spamming_tx():
         time.sleep(240)
 
 
-def vanitygen(self):
-    while True:
+def vanitygen():
+    while config.vanity_enabled:
         bot_logger.logger.info('Check if we need to generate address')
         # get user request of gen
         db = TinyDB(config.vanitygen)

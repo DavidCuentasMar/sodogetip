@@ -36,8 +36,7 @@ message_invalid_amount = "__^[such ^error]__: ^The ^tip ^amount ^must ^be ^at ^l
 message_invalid_currency = "__^[such ^error]__: ^The ^tip ^currency ^must ^be ^doge. ^[[help]](" + link_help + ")"
 message_balance_low_tip = (
     "__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")")
-message_balance_pending_tip = (
-    "__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^must ^wait ^for ^pending ^tips ^to ^be ^confirmed ^before ^sending ^this ^tip ^amount ^[[help]](" + link_help + ")")
+
 message_already_registered = "You are already registered!"
 message_balance_low_withdraw = (
     "Hello /u/{{ username }}! It seems your balance of __Ð{{ user_balance }}__ is too low for this withdraw amount of __Ð{{ amount }}__." \

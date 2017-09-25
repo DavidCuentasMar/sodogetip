@@ -31,8 +31,7 @@ def withdraw_user(msg):
                 tip_id = random.randint(0, 99999999)
 
                 models.HistoryStorage.add_to_history(user.username, user.username, receiver_address, amount, "withdraw",
-                                                     "",
-                                                     tip_id)
+                                                     "", tip_id)
 
                 send = crypto.tip_user(user.address, receiver_address, amount)
 
