@@ -18,7 +18,11 @@ class Tip(object):
         self.verify = False
         self.currency = None
         self.sender = None
+
+        # processing of tip is finish
         self.finish = False
+
+        # current status of tip
         self.status = None
         self.tx_id = None
 
@@ -78,8 +82,8 @@ class Tip(object):
             # get user balance
             self.amount = self.sender.get_balance()
 
-        bot_logger.logger.debug("isinstance self.amount = %s" % str(isinstance(self.amount, str)))
-        bot_logger.logger.debug("type self.amount = %s" % str(type(self.amount)))
+        # bot_logger.logger.debug("isinstance self.amount = %s" % str(isinstance(self.amount, str)))
+        # bot_logger.logger.debug("type self.amount = %s" % str(type(self.amount)))
 
         if type(self.amount) is unicode or type(self.amount) is str:
             bot_logger.logger.debug("self.amount is str")

@@ -111,25 +111,36 @@ def process_pending_tip():
             # check if it's not too old & replay tipping
             if not tip.is_expired():
                 if tip.receiver.is_registered():
-                    bot_logger.logger.info(
-                        "replay tipping %s - %s send %s to %s  " % (
-                            str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                    tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
-                    if tip.tx_id:
-                        tip.finish = True
+                    # check sender have enough
+                    user_balance = tip.sender.get_balance()
+                    bot_logger.logger.debug('user_balance = %s' % user_balance)
 
-                        user_function.remove_pending_tip(tip.id)
+                    # check user not send more they have (confirmed balance)
+                    if tip.amount > float(user_balance):
 
-                        if tip.message_fullname is not None and tip.verify is True:
-                            reddit = praw.Reddit(config.bot_name)
-                            msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
-                            msg = Comment(reddit, msg_id)
-                            msg.reply(Template(lang.message_tip).render(
-                                sender=tip.sender.username, receiver=tip.receiver.username,
-                                amount=str(tip.amount),
-                                value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                        bot_logger.logger.info(
+                            "replay tipping %s - %s send %s to %s  " % (
+                                str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
+                        tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
+                        if tip.tx_id:
+                            tip.finish = True
+
+                            user_function.remove_pending_tip(tip.id)
+
+                            if tip.message_fullname is not None and tip.verify is True:
+                                reddit = praw.Reddit(config.bot_name)
+                                msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
+                                msg = Comment(reddit, msg_id)
+                                msg.reply(Template(lang.message_tip).render(
+                                    sender=tip.sender.username, receiver=tip.receiver.username,
+                                    amount=str(tip.amount),
+                                    value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                    else:
+                        bot_logger.logger.info(
+                            "replay tipping %s - %s send %s to %s - waiting pending" % (
+                                str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
                 else:
                     tip.status = "waiting registration of receiver"
                     bot_logger.logger.info(
@@ -137,7 +148,7 @@ def process_pending_tip():
 
             else:
                 tip.status = "receiver not registered in time"
-                tip.finish = ""
+                tip.finish = True
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s to %s  " % (
                         tip.sender.username, tip.amount, tip.receiver.username))

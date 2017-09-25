@@ -71,8 +71,8 @@ def tip_user(msg):
 
         else:
             # we have to wait unconfirmed balance before process tip, add to queue
-            pass
-            # todo : add this to pendding tips
+            tip.status = "waiting pending balance of sender"
+            user_function.save_unregistered_tip(tip)
     else:
 
         # add tip to history of sender & receiver
