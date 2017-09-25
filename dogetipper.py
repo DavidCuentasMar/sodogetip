@@ -96,58 +96,56 @@ def process_pending_tip():
 
     while True:
         bot_logger.logger.info('Make clean of unregistered tips')
-        # bot_command.replay_pending_tip()
-
-        reddit = praw.Reddit(config.bot_name)
 
         # check if user have pending tips
         list_tips = user_function.get_unregistered_tip()
 
-        if list_tips:
-            for arr_tip in list_tips:
-                tip = models.Tip().create_from_array(arr_tip)
+        if len(list_tips) <= 0:
+            bot_logger.logger.info("no pending tipping")
 
-                bot_logger.logger.info("replay tipping check for %s" % str(tip.id))
+        for arr_tip in list_tips:
+            tip = models.Tip().create_from_array(arr_tip)
 
-                # check if it's not too old & replay tipping
-                if not tip.is_expired():
-                    if tip.receiver.is_registered():
-                        bot_logger.logger.info(
-                            "replay tipping %s - %s send %s to %s  " % (
-                                str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
+            bot_logger.logger.info("replay tipping check for %s" % str(tip.id))
 
-                        tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
-                        if tip.tx_id:
-                            tip.finish = True
+            # check if it's not too old & replay tipping
+            if not tip.is_expired():
+                if tip.receiver.is_registered():
+                    bot_logger.logger.info(
+                        "replay tipping %s - %s send %s to %s  " % (
+                            str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                            user_function.remove_pending_tip(tip.id)
+                    tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
+                    if tip.tx_id:
+                        tip.finish = True
 
-                            if tip.message_fullname is not None and tip.verify is True:
-                                msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
-                                msg = Comment(reddit, msg_id)
-                                msg.reply(Template(lang.message_tip).render(
-                                    sender=tip.sender.username, receiver=tip.receiver.username,
-                                    amount=str(tip.amount),
-                                    value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                        user_function.remove_pending_tip(tip.id)
 
-                    else:
-                        tip.status = "waiting registration of receiver"
-                        bot_logger.logger.info(
-                            "replay check for %s - user %s not registered " % (str(tip.id), tip.receiver.username))
+                        if tip.message_fullname is not None and tip.verify is True:
+                            reddit = praw.Reddit(config.bot_name)
+                            msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
+                            msg = Comment(reddit, msg_id)
+                            msg.reply(Template(lang.message_tip).render(
+                                sender=tip.sender.username, receiver=tip.receiver.username,
+                                amount=str(tip.amount),
+                                value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
 
                 else:
-                    tip.status = "receiver not registered in time"
-                    tip.finish = ""
+                    tip.status = "waiting registration of receiver"
                     bot_logger.logger.info(
-                        "delete old tipping - %s send %s to %s  " % (
-                            tip.sender.username, tip.amount, tip.receiver.username))
-                    user_function.remove_pending_tip(tip.id)
+                        "replay check for %s - user %s not registered " % (str(tip.id), tip.receiver.username))
 
-                # update tip status
-                models.HistoryStorage.update_tip(tip.sender.username, tip)
-                models.HistoryStorage.update_tip(tip.receiver.username, tip)
-        else:
-            bot_logger.logger.info("no pending tipping")
+            else:
+                tip.status = "receiver not registered in time"
+                tip.finish = ""
+                bot_logger.logger.info(
+                    "delete old tipping - %s send %s to %s  " % (
+                        tip.sender.username, tip.amount, tip.receiver.username))
+                user_function.remove_pending_tip(tip.id)
+
+            # update tip status
+            models.HistoryStorage.update_tip(tip.sender.username, tip)
+            models.HistoryStorage.update_tip(tip.receiver.username, tip)
 
         time.sleep(3600)
 
