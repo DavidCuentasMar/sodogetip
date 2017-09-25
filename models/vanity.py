@@ -74,10 +74,10 @@ class VanityGenRequest(object):
         self.address = str((line[1]).split(':')[1]).strip()
         self.private_key = str((line[2]).split(':')[1]).strip()
 
-    def move_funds(self, tx_queue, failover_time):
+    def move_funds(self):
         if self.use is True:
             amount = self.user.get_balance()
-            if crypto.tip_user(self.user.address, self.address, amount, tx_queue, failover_time):
+            if crypto.tip_user(self.user.address, self.address, amount):
                 # update user storage file
                 UserStorage.add_address(self.user.username, self.address)
 

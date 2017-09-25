@@ -2,7 +2,6 @@ import time
 import traceback
 
 import praw
-import requests
 from praw.models import Message, Comment
 from tinydb import TinyDB
 
@@ -20,12 +19,10 @@ class SoDogeTip:
     def __init__(self):
         pass
 
-    def main(self, tx_queue, failover_time):
+    def main(self):
         bot_logger.logger.info('Main Bot loop !')
 
         while True:
-            # bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
-
             try:
                 reddit = praw.Reddit(config.bot_name)
 
@@ -59,11 +56,11 @@ class SoDogeTip:
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(reddit, msg)
-                            commands.withdraw_user(msg, failover_time)
+                            commands.withdraw_user(msg)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(reddit, msg)
-                            commands.tip_user(msg, tx_queue, failover_time)
+                            commands.tip_user(msg)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(reddit, msg)
@@ -78,7 +75,7 @@ class SoDogeTip:
                             commands.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
-                            commands.gold(reddit, msg, tx_queue, failover_time)
+                            commands.gold(reddit, msg)
                             utils.mark_msg_read(reddit, msg)
 
                         else:
@@ -94,10 +91,10 @@ class SoDogeTip:
                 bot_logger.logger.error('Main Bot loop crashed...')
                 time.sleep(10)
 
-    def process_pending_tip(self, tx_queue, failover_time):
+    def process_pending_tip(self):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_pending_tip(tx_queue, failover_time)
+            bot_command.replay_pending_tip()
             time.sleep(3600)
 
     def anti_spamming_tx(self):
@@ -130,30 +127,7 @@ class SoDogeTip:
             # wait a bit before re-scan account
             time.sleep(240)
 
-    def double_spend_check(self, tx_queue, failover_time):
-        while True:
-            bot_logger.logger.info('Check double spend')
-            time.sleep(1)
-            sent_tx = tx_queue.get()
-            bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
-            try:
-                tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
-                if tx_info["double_spend"] is False:
-                    # check we are not in safe mode
-                    if time.time() > int(failover_time.value) + 86400:
-                        bot_logger.logger.warn('Safe mode Disabled')
-                        failover_time.value = 0
-
-                elif tx_info["double_spend"] is True:
-                    # update time until we are in safe mode
-                    bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
-                    failover_time.value = int(time.time())
-            except:
-                traceback.print_exc()
-
-            bot_logger.logger.debug('failover_time : %s' % str(failover_time.value))
-
-    def vanitygen(self, tx_queue, failover_time):
+    def vanitygen(self):
         while True:
             bot_logger.logger.info('Check if we need to generate address')
             # get user request of gen
@@ -174,7 +148,7 @@ class SoDogeTip:
 
                     time_start = time.time()
                     # transfer funds
-                    vanity_request.move_funds(tx_queue, failover_time)
+                    vanity_request.move_funds()
 
                     # set request finish (add time)
                     time_end = time.time()

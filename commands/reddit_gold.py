@@ -13,7 +13,7 @@ import utils
 
 
 # buy an reddit gold account for one month
-def gold(reddit, msg, tx_queue, failover_time):
+def gold(reddit, msg):
     user = models.User(msg.author.name)
     if user.is_registered():
         gold_month = number_gold_credit()
@@ -42,8 +42,7 @@ def gold(reddit, msg, tx_queue, failover_time):
                 return False
 
             # send amount of one month of gold to address
-            tx_id = crypto.tip_user(user.address, config.gold_address, config.price_reddit_gold, tx_queue,
-                                    failover_time)
+            tx_id = crypto.tip_user(user.address, config.gold_address, config.price_reddit_gold)
 
             if tx_id:
                 # send gold reddit

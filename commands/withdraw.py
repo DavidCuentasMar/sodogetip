@@ -9,7 +9,7 @@ import models
 import utils
 
 
-def withdraw_user(msg, failover_time):
+def withdraw_user(msg):
     split_message = msg.body.strip().split()
 
     user = models.User(msg.author.name)
@@ -34,7 +34,7 @@ def withdraw_user(msg, failover_time):
                                                      "",
                                                      tip_id)
 
-                send = crypto.tip_user(user.address, receiver_address, amount, None, failover_time)
+                send = crypto.tip_user(user.address, receiver_address, amount)
 
                 if send:
                     models.HistoryStorage.update_withdraw(user.username, True, send, tip_id)

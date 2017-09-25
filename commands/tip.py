@@ -8,9 +8,8 @@ import user_function
 import utils
 
 
-def tip_user(msg, tx_queue, failover_time):
+def tip_user(msg):
     bot_logger.logger.info('An user mention detected ')
-    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     # create an Tip
     tip = models.Tip()
@@ -53,7 +52,7 @@ def tip_user(msg, tx_queue, failover_time):
         return False
 
     # check sender have enough
-    user_spendable_balance = tip.sender.get_balance(failover_time)
+    user_spendable_balance = tip.sender.get_balance()
     bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
     # check user not send more they have
@@ -79,8 +78,7 @@ def tip_user(msg, tx_queue, failover_time):
 
         # check user who receive tip have an account
         if tip.receiver.is_registered():
-            tip.tx_id = crypto.tip_user(tip.sender.address, tip.receiver.address, tip.amount, tx_queue,
-                                        failover_time)
+            tip.tx_id = crypto.tip_user(tip.sender.address, tip.receiver.address, tip.amount)
             if tip.tx_id:
                 tip.finish = True
                 tip.status = 'ok'

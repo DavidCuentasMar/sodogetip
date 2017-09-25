@@ -13,7 +13,7 @@ import user_function
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_pending_tip(tx_queue, failover_time):
+def replay_pending_tip():
     reddit = praw.Reddit(config.bot_name)
 
     # check if user have pending tips
@@ -32,8 +32,7 @@ def replay_pending_tip(tx_queue, failover_time):
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                    tip.tx_id = crypto.tip_user(tip.sender.address, tip.receiver.address, tip.amount, tx_queue,
-                                                failover_time)
+                    tip.tx_id = crypto.tip_user(tip.sender.address, tip.receiver.address, tip.amount)
                     if tip.tx_id:
                         tip.finish = True
 

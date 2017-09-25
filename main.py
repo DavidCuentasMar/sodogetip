@@ -32,33 +32,26 @@ if __name__ == "__main__":
             Bot = SoDogeTip()
 
             # thread to process reddit commands
-            thread_master = Thread(name='app', target=Bot.main, args=(tx_queue, failover_time,))
+            thread_master = Thread(name='app', target=Bot.main)
+
             # thread to process pending tips
-            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip,
-                                        args=(tx_queue, failover_time,))
+            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip)
+
             # some security thread
             thread_anti_spamming_tx = Thread(name='anti_spam', target=Bot.anti_spamming_tx)
 
-            thread_double_spend_check = Thread(name='double_spend_check',
-                                               target=Bot.double_spend_check,
-                                               args=(tx_queue, failover_time,))
-
             if config.vanity_enabled:
-                thread_vanity = Thread(name='vanitygen',
-                                       target=Bot.vanitygen,
-                                       args=(tx_queue, failover_time,))
+                thread_vanity = Thread(name='vanitygen', target=Bot.vanitygen)
                 thread_vanity.setDaemon(True)
                 thread_vanity.start()
 
             thread_master.start()
             thread_pending_tip.start()
             thread_anti_spamming_tx.start()
-            thread_double_spend_check.start()
 
             thread_master.join()
             thread_pending_tip.join()
             thread_anti_spamming_tx.join()
-            thread_double_spend_check.join()
 
             bot_logger.logger.error('All bot task finished ...')
         except:

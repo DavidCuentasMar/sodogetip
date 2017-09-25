@@ -8,7 +8,7 @@ import models
 import utils
 
 
-def donate(msg, tx_queue, failover_time):
+def donate(msg):
     user = models.User(msg.author.name)
     if user.is_registered():
         split_message = msg.body.lower().strip().split()
@@ -17,8 +17,7 @@ def donate(msg, tx_queue, failover_time):
         amount = split_message[donate_index + 1]
         if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
 
-            crypto.tip_user(user.username.address, models.User(config.bot_name).address, amount, tx_queue,
-                            failover_time)
+            crypto.tip_user(user.username.address, models.User(config.bot_name).address, amount)
 
             models.HistoryStorage.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
