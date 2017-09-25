@@ -1,14 +1,12 @@
 import os
 import time
 import traceback
-from Queue import Queue
-from multiprocessing import Value
 from threading import Thread
 
 import bot_logger
 import config
 import crypto
-from dogetipper import SoDogeTip
+import dogetipper
 
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
@@ -25,23 +23,17 @@ if __name__ == "__main__":
             if not os.path.exists(config.history_path):
                 os.makedirs(config.history_path)
 
-            # start bot
-            tx_queue = Queue()
-            failover_time = Value('i', 0)
-
-            Bot = SoDogeTip()
-
             # thread to process reddit commands
-            thread_master = Thread(name='app', target=Bot.main)
+            thread_master = Thread(name='app', target=dogetipper.main)
 
             # thread to process pending tips
-            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip)
+            thread_pending_tip = Thread(name='pending_tip', target=dogetipper.process_pending_tip)
 
             # some security thread
-            thread_anti_spamming_tx = Thread(name='anti_spam', target=Bot.anti_spamming_tx)
+            thread_anti_spamming_tx = Thread(name='anti_spam', target=dogetipper.anti_spamming_tx)
 
             if config.vanity_enabled:
-                thread_vanity = Thread(name='vanitygen', target=Bot.vanitygen)
+                thread_vanity = Thread(name='vanitygen', target=dogetipper.vanitygen)
                 thread_vanity.setDaemon(True)
                 thread_vanity.start()
 
