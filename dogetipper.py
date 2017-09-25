@@ -122,7 +122,7 @@ def process_pending_tip():
 
                             user_function.remove_pending_tip(tip.id)
 
-                            if tip.message_fullname is not None:
+                            if tip.message_fullname is not None and tip.verify is True:
                                 msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
                                 msg = Comment(reddit, msg_id)
                                 msg.reply(Template(lang.message_tip).render(
