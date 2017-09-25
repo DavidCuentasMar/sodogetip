@@ -18,7 +18,7 @@ from models import UserStorage, VanityGenRequest
 
 class SoDogeTip:
     def __init__(self):
-        self.reddit = praw.Reddit(config.bot_name)
+        pass
 
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
@@ -27,13 +27,14 @@ class SoDogeTip:
             # bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
+                reddit = praw.Reddit(config.bot_name)
 
-                for msg in self.reddit.inbox.unread(limit=None):
+                for msg in reddit.inbox.unread(limit=None):
 
                     if (type(msg) is not Message) and (type(msg) is not Comment):
                         bot_logger.logger.info('Not a good message !')
                         msg.reply(lang.message_not_supported)
-                        utils.mark_msg_read(self.reddit, msg)
+                        utils.mark_msg_read(reddit, msg)
                     else:
                         bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
                         msg_body = msg.body.strip()
@@ -42,46 +43,46 @@ class SoDogeTip:
 
                         if msg_subject == '+register' or split_message.count('+register'):
                             commands.register_user(msg)
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
 
                         elif msg_subject == '+info' or msg_subject == '+balance':
                             commands.info_user(msg)
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
 
                         elif msg_subject == '+help':
                             commands.help_user(msg)
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
 
                         elif msg_subject == '+history':
                             commands.history_user(msg)
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
                             commands.withdraw_user(msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
                             commands.tip_user(msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
-                            utils.mark_msg_read(self.reddit, msg)
-                            commands.donate(msg, tx_queue, failover_time)
+                            utils.mark_msg_read(reddit, msg)
+                            commands.donate(msg)
 
                         elif split_message.count('+halloffame'):
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
                             commands.hall_of_fame(msg)
 
                         elif split_message.count('+vanity'):
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
                             commands.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
-                            commands.gold(self.reddit, msg, tx_queue, failover_time)
-                            utils.mark_msg_read(self.reddit, msg)
+                            commands.gold(reddit, msg, tx_queue, failover_time)
+                            utils.mark_msg_read(reddit, msg)
 
                         else:
-                            utils.mark_msg_read(self.reddit, msg)
+                            utils.mark_msg_read(reddit, msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
 
@@ -96,7 +97,7 @@ class SoDogeTip:
     def process_pending_tip(self, tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_pending_tip(self.reddit, tx_queue, failover_time)
+            bot_command.replay_pending_tip(tx_queue, failover_time)
             time.sleep(3600)
 
     def anti_spamming_tx(self):

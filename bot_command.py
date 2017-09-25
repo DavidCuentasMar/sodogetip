@@ -1,9 +1,11 @@
 import re
 
+import praw
 from jinja2 import Template
 from praw.models import Comment
 
 import bot_logger
+import config
 import crypto
 import lang
 import models
@@ -11,7 +13,9 @@ import user_function
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_pending_tip(reddit, tx_queue, failover_time):
+def replay_pending_tip(tx_queue, failover_time):
+    reddit = praw.Reddit(config.bot_name)
+
     # check if user have pending tips
     list_tips = user_function.get_unregistered_tip()
 
