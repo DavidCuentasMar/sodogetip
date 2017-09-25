@@ -21,8 +21,9 @@ def vanity(msg):
                 if v.save_resquest():
                     # send money to vanity account
 
-                    amount = config.vanitygen_price[len(v.pattern)] - 2  # reduce fee to move funds after generation
-                    crypto.send_to(None, user.address, config.vanitygen_address, amount)
+                    # reduce fee to move funds after generation
+                    amount = config.vanitygen_price[len(v.pattern)] - (2 * float(config.minial_fee))
+                    crypto.send_to_failover(None, user.address, config.vanitygen_address, amount)
 
                     # send message
                     user.send_private_message("Vanity Request : Received", "Your request will be process in few time")
