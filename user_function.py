@@ -41,4 +41,4 @@ def get_balance_unregistered_tip(user):
             if tip['sender'] == user:
                 pending_tips.append(int(tip['amount']))
 
-    return int(sum(pending_tips))
+    return float(sum(pending_tips))

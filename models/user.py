@@ -1,6 +1,3 @@
-import multiprocessing
-import time
-
 import praw
 from tinydb import TinyDB, Query
 
@@ -40,14 +37,14 @@ class User(object):
         pending_tips = self.get_balance_pending_tip()
         bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
-        return crypto.get_user_confirmed_balance(self.address) - int(pending_tips)
+        return crypto.get_user_confirmed_balance(self.address) - float(pending_tips)
 
     # user UN-CONFIRMED balance
     def get_balance_unconfirmed(self):
         return crypto.get_user_unconfirmed_balance(self.address)
 
     # generic balance function
-    def get_balance(self, failover_time=None):
+    def get_balance(self):
         balance = 0
         if self.is_registered():
 
@@ -56,12 +53,6 @@ class User(object):
 
             # get unconfirmed balance come of bot
             balance += float(crypto.get_user_spendable_balance(self.address))
-
-            if failover_time is not None and type(failover_time) is type(multiprocessing.Value):
-                # if we call function without failover_time, we consider we are in safe mode
-                if int(time.time()) > int(failover_time.value) + 86400:
-                    # not in safe mode so add unconfirmed balance
-                    balance += float(self.get_balance_unconfirmed())
 
         return balance
 
