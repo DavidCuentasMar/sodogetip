@@ -123,7 +123,7 @@ def process_pending_tip():
                             "replay tipping %s - %s send %s to %s  " % (
                                 str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                        tip.tx_id = crypto.send_to_failover(None, tip.sender.address, tip.receiver.address, tip.amount)
+                        tip.tx_id = crypto.send_to(None, tip.sender.address, tip.receiver.address, tip.amount)
                         if tip.tx_id:
                             tip.finish = True
 

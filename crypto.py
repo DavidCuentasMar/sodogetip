@@ -132,12 +132,12 @@ def get_user_unconfirmed_balance(address):
 def tip_user(sender_address, receiver_address, amount_tip):
     bot_logger.logger.info("tip send in safe mode")
     try:
-        return send_to_failover(None, sender_address, receiver_address, amount_tip)
+        return send_to(None, sender_address, receiver_address, amount_tip)
     except:
         traceback.print_exc()
 
 
-def send_to_failover(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
+def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
     if rpc is None:
         rpc = get_rpc()
 
