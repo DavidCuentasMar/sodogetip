@@ -117,7 +117,7 @@ def process_pending_tip():
                     bot_logger.logger.debug('user_balance = %s' % user_balance)
 
                     # check user not send more they have (confirmed balance)
-                    if tip.amount > float(user_balance):
+                    if float(user_balance) > float(tip.amount):
 
                         bot_logger.logger.info(
                             "replay tipping %s - %s send %s to %s  " % (
