@@ -47,12 +47,14 @@ class User(object):
     def get_balance(self):
         balance = 0
         if self.is_registered():
-
             # get confirmed balance
             balance = float(self.get_balance_confirmed())
 
+            bot_logger.logger.error("get_balance_confirmed %s " % (str(balance)))
+
             # get unconfirmed balance come of bot
             balance += float(crypto.get_user_spendable_balance(self.address))
+            bot_logger.logger.error("get_user_spendable_balance %s " % (str(balance)))
 
         return balance
 

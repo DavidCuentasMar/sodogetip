@@ -144,6 +144,8 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
+    if len(list_unspent) <= 0:
+        bot_logger.logger.error("no input found form %s" % sender_address)
 
     unspent_amounts = []
     raw_inputs = []

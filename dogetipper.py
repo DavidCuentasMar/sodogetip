@@ -113,7 +113,7 @@ def process_pending_tip():
                 if tip.receiver.is_registered():
 
                     # check sender have enough
-                    user_balance = tip.sender.get_balance()
+                    user_balance = tip.sender.get_balance_confirmed()
                     bot_logger.logger.debug('user_balance = %s' % user_balance)
 
                     # check user not send more they have (confirmed balance)
