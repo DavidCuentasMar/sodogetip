@@ -34,7 +34,7 @@ args = parser.parse_args()
 
 if args.gold:
     print "\n\n Gold Creddit :"
-    reddit = praw.Reddit(config.bot_config)
+    reddit = praw.Reddit(config.bot_name)
     print "Current gold credit  => " + str(reddit.user.me().gold_creddits)
 else:
     print "Formater used for analysis is " + args.formater

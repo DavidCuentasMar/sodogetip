@@ -72,6 +72,11 @@ def tip_user(msg):
         else:
             # we have to wait unconfirmed balance before process tip, add to queue
             tip.status = "waiting pending balance of sender"
+
+            # add tip to history of sender & receiver
+            models.HistoryStorage.add_to_history_tip(tip.sender.username, "tip send", tip)
+            models.HistoryStorage.add_to_history_tip(tip.receiver.username, "tip receive", tip)
+
             user_function.save_unregistered_tip(tip)
     else:
 
