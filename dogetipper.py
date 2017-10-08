@@ -225,4 +225,4 @@ def vanitygen():
                                                          "Vanity address is finish, you can use our new address, and thanks to support %s" % config.bot_name)
 
         # wait a bit before re-check
-        time.sleep(300)
+        time.sleep(3000)
