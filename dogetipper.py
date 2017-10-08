@@ -186,7 +186,7 @@ def anti_spamming_tx():
                                 break
 
                         bot_logger.logger.info('Consolidate %s account !' % account)
-                        crypto.tip_user(address, address, sum(unspent_amounts), True)
+                        crypto.tip_user(address, address, sum(unspent_amounts))
 
         # wait a bit before re-scan account
         time.sleep(240)
