@@ -17,10 +17,16 @@ def gold(reddit, msg):
     user = models.User(msg.author.name)
     if user.is_registered():
         gold_month = number_gold_credit()
+        split_message = msg.body.strip().split()
 
-        if msg.body.strip() == 'buy':
+        if split_message[0] == 'buy':
             # Number of month
             quantity = 1
+
+            user_gilded = user.username
+            if len(split_message) == 2 and models.UserStorage.exist(split_message[1]):
+                # we buy for someone
+                user_gilded = split_message[1]
 
             # check if we have enough credits
             if not gold_month >= quantity:
@@ -29,6 +35,7 @@ def gold(reddit, msg):
                 db.insert({
                     "user": user.username,
                     "quantity": quantity,
+                    "user_gilded": user_gilded,
                     'time': datetime.datetime.now().isoformat(),
                 })
                 db.close()
@@ -46,7 +53,7 @@ def gold(reddit, msg):
 
             if tx_id:
                 # send gold reddit
-                Redditor(reddit, user.username).gild(months=quantity)
+                Redditor(reddit, user_gilded).gild(months=quantity)
 
                 # update gold reddit table
                 store_user_buy(user, quantity, tx_id)
