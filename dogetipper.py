@@ -2,14 +2,15 @@ import re
 import time
 import traceback
 
+import config
 import praw
 from jinja2 import Template
+from praw.exceptions import APIException
 from praw.models import Message, Comment
 from tinydb import TinyDB
 
 import bot_logger
 import commands
-import config
 import crypto
 import lang
 import models
@@ -133,10 +134,16 @@ def process_pending_tip():
                                 reddit = praw.Reddit(config.bot_name)
                                 msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
                                 msg = Comment(reddit, msg_id)
-                                msg.reply(Template(lang.message_tip).render(
-                                    sender=tip.sender.username, receiver=tip.receiver.username,
-                                    amount=str(tip.amount),
-                                    value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                                try:
+                                    msg.reply(Template(lang.message_tip).render(
+                                        sender=tip.sender.username, receiver=tip.receiver.username,
+                                        amount=str(tip.amount),
+                                        value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                                except APIException as e:
+                                    if str(e.error_type) == "DELETED_COMMENT":
+                                        bot_logger.logger.warning("praw_call(): deleted comment: %s", e)
+                                    else:
+                                        raise
                     else:
                         bot_logger.logger.info(
                             "replay tipping %s - %s send %s to %s - waiting pending" % (
