@@ -31,10 +31,10 @@ def get_rpc(coin=None):
         get_rpc('doge')
 
 
-def backup_wallet():
-    rpc = get_rpc()
+def backup_wallet(coin=None):
+    rpc = get_rpc(coin)
     rpc.backupwallet(
-        config.backup_wallet_path + "backup_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".dat")
+        config.rpc_config[coin]['backup_wallet_path'] + "backup_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".dat")
 
 
 def init_passphrase(coin=None):
@@ -51,7 +51,7 @@ def check_passphrase(coin=None):
     rpc = get_rpc(coin)
 
     logging.disable(logging.DEBUG)
-    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
+    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config[coin]['timeout']))
     logging.disable(logging.NOTSET)
 
     # let some daemon time to unlock wallet
