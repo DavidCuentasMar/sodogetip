@@ -29,6 +29,7 @@ def build_message(data):
     history_table += "---|---|---|---|:-:|:-:\n"
     for tip in data[::-1]:
         str_finish = "Pending"
+        coin = tip['currency']
 
         # custom status
         if 'status' in tip.keys() and tip['status'] is not None and tip['status'] != "":
@@ -37,7 +38,7 @@ def build_message(data):
         # finish and have link to tx
         if tip['finish']:
             if tip['tx_id'] and len(tip['tx_id']) >= 64:
-                str_finish = "[Successful](" + config.block_explorer + tip['tx_id'] + ")"
+                str_finish = "[Successful](" + config.rpc_config[coin].block_explorer + tip['tx_id'] + ")"
         else:
             str_finish = ""
 

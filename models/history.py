@@ -20,7 +20,7 @@ class HistoryStorage:
         return data
 
     @staticmethod
-    def add_to_history(user_history, sender, receiver, amount, action, finish=False, tx_id="", tip_id=""):
+    def add_to_history(user_history, sender, receiver, amount, action, finish=False, tx_id="", tip_id="", coin = "doge"):
         # convert object to string of name if necessary
         if type(user_history) is models.User:
             user_history = user_history.username
@@ -34,6 +34,7 @@ class HistoryStorage:
         db = TinyDB(config.history_path + user_history + '.json')
         db.insert({
             "id": tip_id,
+            "coin": coin,
             "user": user_history,
             "sender": sender,
             "receiver": receiver,
@@ -59,6 +60,7 @@ class HistoryStorage:
         db.insert({
             "user": user_history,
             "id": tip.id,
+            "coin": tip.coin,
             "sender": tip.sender.username,
             "receiver": tip.receiver.username,
             "amount": tip.amount,

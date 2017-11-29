@@ -1,12 +1,21 @@
-
 ## sample of config file
 
 rpc_config = {
-    "rpc_port": "22545",
-    "rpc_host": "127.0.0.1",
-    "rpc_username": "dogecoinrpc",
-    "rpc_password": "dogecoinpassword",
-    "timeout": 60
+    'doge': {
+        "rpc_port": "22545",
+        "rpc_host": "127.0.0.1",
+        "rpc_username": "dogecoinrpc",
+        "rpc_password": "dogecoinpassword",
+        "timeout": 60,
+        "block_explorer": "https://chain.so/tx/DOGE/"
+    },
+    'ltc': {
+        "rpc_port": "9432",
+        "rpc_host": "127.0.0.1",
+        "rpc_username": "litecoinrpc",
+        "rpc_password": "litecoinpassword",
+        "timeout": 60
+    }
 }
 
 # with ending /
@@ -25,7 +34,6 @@ history_path = DATA_PATH + 'history/'
 float_precision = 0
 spam_limit = 500
 coin_name = 'doge'
-block_explorer = "https://chain.so/tx/DOGE/"
 rate_fee = 1
 minial_fee = 1
 
@@ -37,7 +45,7 @@ url_get_value = {
 }
 
 tip_keyword = {
-    "dogecar" : 98
+    "dogecar": 98
 }
 
 # vanity-gen request
@@ -45,12 +53,11 @@ vanity_enabled = False
 vanitygen = DATA_PATH + 'vanitygen.json'
 vanitygen_address = "DGo1dHhU2pRAyU58LgACYU3i3fpaZakG5u"
 vanitygen_price = {
- "3":"10",
- "4":"50"
+    "3": "10",
+    "4": "50"
 }
-
 
 # shop
 shop_enabled = False
-shop_fee = float(1/100)
+shop_fee = float(1 / 100)
 shop_offer = DATA_PATH + 'offer.json'

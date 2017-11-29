@@ -21,11 +21,14 @@ def base58_is_valid(string):
     return True
 
 
-def get_rpc():
-    return AuthServiceProxy("http://%s:%s@%s:%s" % (
-        config.rpc_config['rpc_username'], config.rpc_config['rpc_password'],
-        config.rpc_config['rpc_host'],
-        config.rpc_config['rpc_port']), timeout=config.rpc_config['timeout'])
+def get_rpc(coin=None):
+    if coin.lower() in config.rpc_config.keys():
+        return AuthServiceProxy("http://%s:%s@%s:%s" % (
+            config.rpc_config['rpc_username'], config.rpc_config['rpc_password'],
+            config.rpc_config['rpc_host'],
+            config.rpc_config['rpc_port']), timeout=config.rpc_config['timeout'])
+    else:
+        get_rpc('doge')
 
 
 def backup_wallet():
@@ -34,14 +37,18 @@ def backup_wallet():
         config.backup_wallet_path + "backup_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".dat")
 
 
-def init_passphrase():
+def init_passphrase(coin=None):
     # enter user passphrase
     global wallet_passphrase
-    wallet_passphrase = getpass.getpass("wallet passphrase : ")
+
+    if 'wallet_passphrase' not in globals():
+        wallet_passphrase = {}
+
+    wallet_passphrase[coin] = getpass.getpass("wallet passphrase (%s) : " % coin)
 
 
-def check_passphrase():
-    rpc = get_rpc()
+def check_passphrase(coin=None):
+    rpc = get_rpc(coin)
 
     logging.disable(logging.DEBUG)
     rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
@@ -53,7 +60,7 @@ def check_passphrase():
     # check
     wallet_info = rpc.getwalletinfo()
     if wallet_info['unlocked_until'] < time.time():
-        bot_logger.logger.error("error durring unlock your wallet")
+        bot_logger.logger.error("error durring unlock your %s wallet" % coin)
         exit()
 
     rpc.walletlock()

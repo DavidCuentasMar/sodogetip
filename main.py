@@ -11,11 +11,12 @@ import dogetipper
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
-    # get wallet pass phrase from user input
-    crypto.init_passphrase()
+    for coin in config.rpc_config.keys():
+        # get wallet pass phrase from user input
+        crypto.init_passphrase(coin)
 
-    # check passphase is good
-    crypto.check_passphrase()
+        # check passphase is good for all coin
+        crypto.check_passphrase(coin)
 
     while True:
         try:
