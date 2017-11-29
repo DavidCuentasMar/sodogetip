@@ -140,7 +140,8 @@ def process_pending_tip():
                                         amount=str(tip.amount),
                                         value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
                                 except APIException as e:
-                                    if str(e.error_type) == "DELETED_COMMENT":
+                                    if (str(e.error_type) == "DELETED_COMMENT") or (
+                                                str(e.error_type) == "THREAD_LOCKED"):
                                         bot_logger.logger.warning("praw_call(): deleted comment: %s", e)
                                     else:
                                         raise
