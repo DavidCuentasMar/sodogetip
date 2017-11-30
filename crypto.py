@@ -24,9 +24,9 @@ def base58_is_valid(string):
 def get_rpc(coin=None):
     if coin.lower() in config.rpc_config.keys():
         return AuthServiceProxy("http://%s:%s@%s:%s" % (
-            config.rpc_config['rpc_username'], config.rpc_config['rpc_password'],
-            config.rpc_config['rpc_host'],
-            config.rpc_config['rpc_port']), timeout=config.rpc_config['timeout'])
+            config.rpc_config[coin]['rpc_username'], config.rpc_config[coin]['rpc_password'],
+            config.rpc_config[coin]['rpc_host'],
+            config.rpc_config[coin]['rpc_port']), timeout=config.rpc_config[coin]['timeout'])
     else:
         get_rpc('doge')
 
